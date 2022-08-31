@@ -11,14 +11,26 @@ from .validation import validate_required_fields, validate_names
 
 class Labguru(object):
 
-    def __init__(self, login, password):
-        data = {
-            'login': login,
-            'password': password
-        }
+    def __init__(self, login, password, token= None):
+        
+        if token is None:
+            data = {
+                'login': login,
+                'password': password
+            }
+            url = api.normalise('/api/v1/sessions.json')
+            response = api.request(url, data=data)
+        else:
+            response = {
+                'token' : token,
+                'url' : api.normalise('/'),
+                'admin' : None,
+                'orders' : None,
+                'account_id' : None,
+                'account_name' : None,
+                'environment' : None
+                }
 
-        url = api.normalise('/api/v1/sessions.json')
-        response = api.request(url, data=data)
         if response.get('token') == '-1':
             raise UnAuthorizeException('Login failed! Wrong email or password')
         else:
